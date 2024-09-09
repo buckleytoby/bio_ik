@@ -90,9 +90,11 @@ void Problem::initialize(moveit::core::RobotModelConstPtr robot_model, const mov
         dpos = params.dpos;
         drot = params.drot;
         dtwist = params.dtwist;
+        dcustom = params.dcustom;
         if(dpos < 0.0 || dpos >= FLT_MAX || !std::isfinite(dpos)) dpos = DBL_MAX;
         if(drot < 0.0 || drot >= FLT_MAX || !std::isfinite(drot)) drot = DBL_MAX;
         if(dtwist < 0.0 || dtwist >= FLT_MAX || !std::isfinite(dtwist)) dtwist = DBL_MAX;
+        if(dcustom < 0.0 || dcustom >= FLT_MAX || !std::isfinite(dcustom)) dcustom = DBL_MAX;
     }
 
     link_tip_indices.clear();
@@ -326,11 +328,11 @@ bool Problem::checkSolutionActiveVariables(const std::vector<Frame>& tip_frames,
 
         default:
         {
-            double dmax = DBL_MAX;
-            dmax = std::fmin(dmax, dpos);
-            dmax = std::fmin(dmax, dtwist);
-            double d = computeGoalFitness(goal, tip_frames.data(), active_variable_positions);
-            if(!(d < dmax * dmax)) return false;
+            if(dcustom != DBL_MAX)
+            {
+                double d = computeGoalFitness(goal, tip_frames.data(), active_variable_positions);
+                if(!(d <= dcustom)) return false;
+            }
         }
         }
     }

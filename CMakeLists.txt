@@ -3,7 +3,7 @@ project(bio_ik)
 
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
   message("${PROJECT_NAME}: You did not request a specific build type: Choosing 'Release' for maximum performance")
-  set(CMAKE_BUILD_TYPE Release)
+  set(CMAKE_BUILD_TYPE Debug)
 endif()
 
 find_package(ament_cmake REQUIRED)

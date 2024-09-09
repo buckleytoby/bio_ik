@@ -106,6 +106,8 @@ struct IKParallel
     Problem problem;
     bool enable_counter;
     double best_fitness;
+    bool early_exit;
+    bool timed_out {false};
 
     IKParallel(const IKParams& params)
         : params(params)
@@ -114,6 +116,7 @@ struct IKParallel
         std::string name = params.solver_class_name;
 
         enable_counter = params.enable_counter;
+        early_exit = params.early_exit;
 
         // create solvers
         solvers.emplace_back(IKFactory::create(name, params));
@@ -145,6 +148,17 @@ struct IKParallel
     }
 
 private:
+    bool canExit()
+    {
+        // can only exit if early exit is active and finished is true
+        bool can_exit = early_exit && finished == 1;
+        return can_exit;
+    }
+    void update()
+    {
+        // update timed out
+        timed_out = std::chrono::system_clock::now() >= timeout;
+    }
     void solverthread(size_t i)
     {
         THREADPROFILER("thread", i);
@@ -156,18 +170,23 @@ private:
             solvers[i]->initialize(problem);
         }
 
-        // run solver iterations until solution found or timeout
-        for(size_t iteration = 0; (std::chrono::system_clock::now() < timeout && finished == 0) || (iteration == 0 && i == 0); iteration++)
+        // update
+        update();
+
+        // run solver iterations until solution found (if early exit enabled) or timeout
+        for(size_t iteration = 0; (!timed_out && !canExit()) || (iteration == 0 && i == 0); iteration++)
         {
-            if(finished) break;
+            if(canExit()) break;
 
             // run solver for a few steps
             solvers[i]->step();
             iteration_count++;
+            // update
+            update();
             for(int it2 = 1; it2 < 4; it2++)
-                if(std::chrono::system_clock::now() < timeout && finished == 0) solvers[i]->step();
+                if(!timed_out && !canExit()) solvers[i]->step();
 
-            if(finished) break;
+            if(canExit()) break;
 
             // get solution and check stop criterion
             auto& result = solver_temps[i];
@@ -180,7 +199,10 @@ private:
             solver_solutions[i] = result;
             solver_fitness[i] = solvers[i]->computeFitness(result, fk.getTipFrames());
 
-            if(success) break;
+            if(canExit()) break;
+
+            // update
+            update();
         }
 
         finished = 1;
@@ -200,6 +222,7 @@ public:
         timeout = problem.timeout;
         success = false;
         finished = 0;
+        timed_out = false;
         for(auto& s : solver_solutions)
             s = problem.initial_guess;
         for(auto& s : solver_temps)

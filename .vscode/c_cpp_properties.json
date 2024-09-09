@@ -1,0 +1,44 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/omnid/dexnex/ws_flir/install/spinnaker_camera_driver/include/**",
+        "/home/omnid/dexnex/ws_flir/install/flir_camera_msgs/include/**",
+        "/home/omnid/dexnex/ws_avatar/install/xarm_planner/include/**",
+        "/home/omnid/dexnex/ws_avatar/install/xarm_gazebo/include/**",
+        "/home/omnid/dexnex/ws_avatar/install/xarm_controller/include/**",
+        "/home/omnid/dexnex/ws_avatar/install/xarm_api/include/**",
+        "/home/omnid/dexnex/ws_avatar/install/avatar_driver/include/**",
+        "/home/omnid/dexnex/ws_avatar/install/xarm_msgs/include/**",
+        "/home/omnid/dexnex/ws_avatar/install/haptx_interfaces/include/**",
+        "/home/omnid/dexnex/ws_avatar/install/ffmpeg_image_transport/include/**",
+        "/home/omnid/dexnex/ws_avatar/install/ffmpeg_image_transport_msgs/include/**",
+        "/home/omnid/dexnex/ws_avatar/install/bio_ik/include/**",
+        "/home/omnid/dexnex/ws_avatar/install/avatar_msgs/include/**",
+        "/opt/ros/iron/include/**",
+        "/home/omnid/dexnex/ws_avatar/src/abb_gofa_ros2/abb_gofa_common/include/**",
+        "/home/omnid/dexnex/ws_avatar/src/abb_libegm/include/**",
+        "/home/omnid/dexnex/ws_avatar/src/avatar_master/avatar_driver/include/**",
+        "/home/omnid/dexnex/ws_avatar/src/bio_ik/include/**",
+        "/home/omnid/dexnex/ws_avatar/src/ffmpeg_image_transport/include/**",
+        "/home/omnid/dexnex/ws_avatar/src/xarm_ros2/thirdparty/realsense_gazebo_plugin/include/**",
+        "/home/omnid/dexnex/ws_avatar/src/xarm_ros2/xarm_api/include/**",
+        "/home/omnid/dexnex/ws_avatar/src/xarm_ros2/xarm_controller/include/**",
+        "/home/omnid/dexnex/ws_avatar/src/xarm_ros2/xarm_gazebo/include/**",
+        "/home/omnid/dexnex/ws_avatar/src/xarm_ros2/xarm_moveit_servo/include/**",
+        "/home/omnid/dexnex/ws_avatar/src/xarm_ros2/xarm_planner/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

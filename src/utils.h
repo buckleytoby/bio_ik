@@ -66,12 +66,14 @@ struct IKParams
     bool enable_counter;
     int thread_count;
     int random_seed;
+    bool early_exit;
 
     //Problem parameters
     double dpos;
     double drot;
     double dtwist;
-
+    double dcustom;
+    
     // ik_evolution_1 parameters
     bool opt_no_wipeout;
     int population_size;
@@ -83,7 +85,7 @@ struct IKParams
 //#define ENABLE_LOG
 
 // Uncomment to enable profiling
-//#define ENABLE_PROFILER
+// #define ENABLE_PROFILER
 
 // logging
 
@@ -264,7 +266,7 @@ struct Profiler
                     std::this_thread::sleep_for(std::chrono::duration<size_t, std::micro>(rand() % 1000));
                 }
                 {
-                    double thistime = ros::WallTime::now().toSec();
+                    double thistime = rclcpp::Clock().now().seconds();
                     static double lasttime = 0.0;
                     if(thistime < lasttime + 1) continue;
                     lasttime = thistime;

@@ -209,11 +209,13 @@ struct BioIKKinematicsPlugin : kinematics::KinematicsBase {
     getRosParam("counter", ikparams.enable_counter, false);
     getRosParam("threads", ikparams.thread_count, 0);
     getRosParam("random_seed", ikparams.random_seed, static_cast<int>(std::random_device()()));
+    getRosParam("early_exit", ikparams.early_exit, true);
 
     // initialize parameters for Problem
     getRosParam("dpos", ikparams.dpos, DBL_MAX);
     getRosParam("drot", ikparams.drot, DBL_MAX);
     getRosParam("dtwist", ikparams.dtwist, 1e-5);
+    getRosParam("dcustom", ikparams.dcustom, DBL_MAX);
 
     // initialize parameters for ik_evolution_1
     getRosParam("no_wipeout", ikparams.opt_no_wipeout, false);
@@ -524,42 +526,48 @@ struct BioIKKinematicsPlugin : kinematics::KinematicsBase {
     state = ik->getSolution();
 
     // wrap angles
-    for (auto ivar : problem.active_variables) {
-      auto v = state[ivar];
-      if (robot_info.isRevolute(ivar) &&
-          robot_model_->getMimicJointModels().empty()) {
-        auto r = problem.initial_guess[ivar];
-        auto lo = robot_info.getMin(ivar);
-        auto hi = robot_info.getMax(ivar);
+    // for (auto ivar : problem.active_variables) {
+    //   auto v = state[ivar];
+    //   if (robot_info.isRevolute(ivar) &&
+    //       robot_model_->getMimicJointModels().empty()) {
+    //     auto r = problem.initial_guess[ivar];
+    //     auto lo = robot_info.getMin(ivar);
+    //     auto hi = robot_info.getMax(ivar);
 
-        // move close to initial guess
-        if (r < v - M_PI || r > v + M_PI) {
-          v -= r;
-          v /= (2 * M_PI);
-          v += 0.5;
-          v -= std::floor(v);
-          v -= 0.5;
-          v *= (2 * M_PI);
-          v += r;
-        }
+    //     // move close to initial guess
+    //     if (r < v - M_PI || r > v + M_PI) {
+    //       v -= r;
+    //       v /= (2 * M_PI);
+    //       v += 0.5;
+    //       v -= std::floor(v);
+    //       v -= 0.5;
+    //       v *= (2 * M_PI);
+    //       v += r;
+    //     }
 
-        // wrap at joint limits
-        if (v > hi)
-          v -= std::ceil(std::max(0.0, v - hi) / (2 * M_PI)) * (2 * M_PI);
-        if (v < lo)
-          v += std::ceil(std::max(0.0, lo - v) / (2 * M_PI)) * (2 * M_PI);
+    //     // wrap at joint limits
+    //     if (v > hi)
+    //       v -= std::ceil(std::max(0.0, v - hi) / (2 * M_PI)) * (2 * M_PI);
+    //     if (v < lo)
+    //       v += std::ceil(std::max(0.0, lo - v) / (2 * M_PI)) * (2 * M_PI);
 
-        // clamp at edges
-        if (v < lo)
-          v = lo;
-        if (v > hi)
-          v = hi;
-      }
-      state[ivar] = v;
-    }
+    //     // clamp at edges
+    //     if (v < lo)
+    //       v = lo;
+    //     if (v > hi)
+    //       v = hi;
+    //   }
+    //   state[ivar] = v;
+    // }
 
     // wrap angles
     robot_model_->enforcePositionBounds(state.data());
+
+    // // angles may have changed so we must compute success again
+    // bool success = ik->getSuccess() 
+    // auto &fk = solvers[i]->model;
+    // fk.applyConfiguration(state);
+    // bool success = solvers[i]->checkSolution(state, fk.getTipFrames());
 
     // map result to jointgroup variables
     {

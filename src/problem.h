@@ -61,7 +61,7 @@ private:
     const moveit::core::JointModelGroup* joint_model_group;
     IKParams params;
     RobotInfo modelInfo;
-    double dpos, drot, dtwist;
+    double dpos, drot, dtwist, dcustom;
 #if (MOVEIT_FCL_VERSION < FCL_VERSION_CHECK(0, 6, 0))
     struct CollisionShape
     {

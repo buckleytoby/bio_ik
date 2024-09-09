@@ -236,7 +236,7 @@ template <int if_stuck, size_t threads> struct IKGradientDescent : IKBase
             else
             {
                 if(if_stuck == 'r')
-                {
+                {   
                     // reset if stuck
                     reset = true;
                 }
